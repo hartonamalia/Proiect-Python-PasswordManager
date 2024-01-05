@@ -85,6 +85,13 @@ class PasswordManager:
             del self.passwords[website]
             self.save_passwords()
 
+    def remove_website_user(self, website, username):
+        if website in self.passwords:
+            updated_credentials = [credential for credential in self.passwords[website] if
+                                   credential['username'] != username]
+            self.passwords[website] = updated_credentials
+            self.save_passwords()
+
     def list_website_passwords(self):
         for website, credentials_list in self.passwords.items():
             for credential in credentials_list:
@@ -97,6 +104,8 @@ def main():
     parser.add_argument('-add', nargs=3, metavar=('website', 'username', 'password'), help='Add a new password entry')
     parser.add_argument('-get', metavar='website', help='Get password for a specific website')
     parser.add_argument('-remove', metavar='website', help='Remove password for a specific website')
+    parser.add_argument('-remove_user', nargs=2, metavar=('website', 'username'),
+                        help='Remove a specific user for a website')
     parser.add_argument('-list', action='store_true', help='List all passwords')
 
 
