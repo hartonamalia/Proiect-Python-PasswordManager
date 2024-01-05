@@ -1,5 +1,6 @@
 import yaml
 import argparse
+from cryptography import fernet
 from cryptography.fernet import Fernet
 import json
 import os
@@ -44,6 +45,24 @@ class PasswordManager:
     def decrypt_data(self, data):
         cipher = Fernet(self.key)
         return cipher.decrypt(data).decode()
+
+    def load_passwords(self):
+        passwords_dict = {}
+
+        if os.path.exists(self.db_path):
+            with open(self.db_path, 'rb') as f:
+                encrypted_data = f.read()
+
+                if encrypted_data:
+                    try:
+                        decrypted_data = self.decrypt_data(encrypted_data)
+                        passwords_dict = json.loads(decrypted_data)
+                    except fernet.InvalidToken:
+                        print("Invalid token, cannot decrypt the passwords.")
+                    except json.JSONDecodeError:
+                        print("Decrypted data is not valid JSON.")
+
+        return passwords_dict
 
 
 if __name__ == "__main__":
