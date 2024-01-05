@@ -87,9 +87,20 @@ class PasswordManager:
             del self.passwords[website]
             self.save_passwords()
 
+    def list_website_passwords(self):
+        for website, credentials_list in self.passwords.items():
+            for credential in credentials_list:
+                print(f"Website: {website}, Username: {credential['username']}, Password: {credential['password']}")
+            print()
+
 def main():
     parser = argparse.ArgumentParser(description='Password Manager')
     parser.add_argument('master_password', help='Master password for encryption/decryption')
+    parser.add_argument('-add', nargs=3, metavar=('website', 'username', 'password'), help='Add a new password entry')
+    parser.add_argument('-get', metavar='website', help='Get password for a specific website')
+    parser.add_argument('-remove', metavar='website', help='Remove password for a specific website')
+    parser.add_argument('-list', action='store_true', help='List all passwords')
+
 
     args, unknown_args = parser.parse_known_args()
 
