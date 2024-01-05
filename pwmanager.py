@@ -67,9 +67,7 @@ class PasswordManager:
 
     def save_passwords(self):
         encrypted_data = self.encrypt_data(json.dumps(self.passwords))
-        print(self.db_path)
         with open(self.db_path, 'w') as f:
-            print(self.db_path)
             f.write(encrypted_data)
 
     def add_password(self, website, username, password):
@@ -108,6 +106,37 @@ def main():
     if password_manager.decrypt_data(password_manager.master_password) != args.master_password:
         print("Wrong password!")
         return 0
+
+    if not (args.add or args.get or args.remove or args.list or args.remove_user):
+        print("Invalid operation. Use -add, -get, -remove, -remove_user or -list.")
+        return 0
+
+    if args.add:
+        website, username, password = args.add
+        if password_manager.passwords.get(website):
+            for credential in password_manager.passwords[website]:
+                if username == credential['username']:
+                    print("An account with this username for this website already exists")
+                    return 0
+        password_manager.add_password(website, username, password)
+        print(f"Password added for {website}")
+    elif args.get:
+        website = args.get
+        if website not in password_manager.passwords:
+            print("No matching website found.")
+            return 0
+        credentials = password_manager.get_password(website)
+        for credential in credentials:
+            print(f"Website: {website}, Username: {credential['username']}, Password: {credential['password']}")
+    elif args.remove:
+        website = args.remove
+        if website not in password_manager.passwords:
+            print("No matching website found.")
+            return 0
+        password_manager.remove_website(website)
+        print(f"Password removed for {website}")
+    elif args.list:
+        password_manager.list_website_passwords()
 
 
 if __name__ == "__main__":
