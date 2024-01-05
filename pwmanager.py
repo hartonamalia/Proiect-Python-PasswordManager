@@ -11,6 +11,16 @@ class PasswordManager:
         self.master_password = None
         self.db_path = db_path
         self.key = self.load_or_create_key()
+        self.load_master_password()
+
+    def load_master_password(self):
+        try:
+            with open('config.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+            self.master_password = config['master_password']
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            raise
 
     def load_or_create_key(self):
         key_file = 'key.key'
@@ -37,5 +47,5 @@ class PasswordManager:
 
 
 if __name__ == "__main__":
-    password_manager = PasswordManager("1234")
-    print(password_manager.encrypt_data("1234"))
+    password_manager = PasswordManager()
+    print(password_manager.master_password)
