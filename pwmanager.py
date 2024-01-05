@@ -12,6 +12,7 @@ class PasswordManager:
         self.master_password = None
         self.db_path = db_path
         self.key = self.load_or_create_key()
+        self.passwords = self.load_passwords()
         self.load_master_password()
 
     def load_master_password(self):
@@ -64,7 +65,36 @@ class PasswordManager:
 
         return passwords_dict
 
+    def save_passwords(self):
+        encrypted_data = self.encrypt_data(json.dumps(self.passwords))
+        print(self.db_path)
+        with open(self.db_path, 'w') as f:
+            print(self.db_path)
+            f.write(encrypted_data)
+
+    def add_password(self, website, username, password):
+        if website not in self.passwords:
+            self.passwords[website] = []
+
+        self.passwords[website].append({'username': username, 'password': password})
+        self.save_passwords()
+
+    def get_password(self, website):
+        return self.passwords.get(website, {})
+
+def main():
+    parser = argparse.ArgumentParser(description='Password Manager')
+    parser.add_argument('master_password', help='Master password for encryption/decryption')
+
+    args, unknown_args = parser.parse_known_args()
+
+    password_manager = PasswordManager()
+    if password_manager.decrypt_data(password_manager.master_password) != args.master_password:
+        print("Wrong password!")
+        return 0
+
 
 if __name__ == "__main__":
-    password_manager = PasswordManager()
-    print(password_manager.master_password)
+    main()
+    #password_manager = PasswordManager()
+    #print(password_manager.master_password)
