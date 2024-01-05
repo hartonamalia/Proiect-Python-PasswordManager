@@ -82,6 +82,11 @@ class PasswordManager:
     def get_password(self, website):
         return self.passwords.get(website, {})
 
+    def remove_website(self, website):
+        if website in self.passwords:
+            del self.passwords[website]
+            self.save_passwords()
+
 def main():
     parser = argparse.ArgumentParser(description='Password Manager')
     parser.add_argument('master_password', help='Master password for encryption/decryption')
