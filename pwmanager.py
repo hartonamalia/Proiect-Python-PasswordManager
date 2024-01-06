@@ -144,6 +144,16 @@ def main():
             return 0
         password_manager.remove_website(website)
         print(f"Password removed for {website}")
+    elif args.remove_user:
+        website, username = args.remove_user
+        if website not in password_manager.passwords:
+            print("No matching website found.")
+            return 0
+        if password_manager.passwords.get(website):
+            if not any(credential['username'] == username for credential in password_manager.passwords[website]):
+                print("No matching user found for this website and username.")
+                return 0
+        password_manager.remove_website_user(website, username)
     elif args.list:
         password_manager.list_website_passwords()
 
