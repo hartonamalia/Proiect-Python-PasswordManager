@@ -1,9 +1,14 @@
+import sys
 import yaml
 import argparse
 from cryptography import fernet
 from cryptography.fernet import Fernet
 import json
 import os
+
+
+def is_exact_arg(arg):
+    return arg in sys.argv
 
 
 class PasswordManager:
@@ -98,8 +103,9 @@ class PasswordManager:
                 print(f"Website: {website}, Username: {credential['username']}, Password: {credential['password']}")
             print()
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Password Manager')
+    parser = argparse.ArgumentParser(description='Password Manager', allow_abbrev=False)
     parser.add_argument('master_password', help='Master password for encryption/decryption')
     parser.add_argument('-add', nargs=3, metavar=('website', 'username', 'password'), help='Add a new password entry')
     parser.add_argument('-get', metavar='website', help='Get password for a specific website')
@@ -107,7 +113,6 @@ def main():
     parser.add_argument('-remove_user', nargs=2, metavar=('website', 'username'),
                         help='Remove a specific user for a website')
     parser.add_argument('-list', action='store_true', help='List all passwords')
-
 
     args, unknown_args = parser.parse_known_args()
 
@@ -120,7 +125,7 @@ def main():
         print("Invalid operation. Use -add, -get, -remove, -remove_user or -list.")
         return 0
 
-    if args.add:
+    if args.add and is_exact_arg('-add'):
         website, username, password = args.add
         if password_manager.passwords.get(website):
             for credential in password_manager.passwords[website]:
@@ -129,22 +134,22 @@ def main():
                     return 0
         password_manager.add_password(website, username, password)
         print(f"Password added for {website}")
-    elif args.get:
+    elif args.get and is_exact_arg('-get'):
         website = args.get
         if website not in password_manager.passwords:
             print("No matching website found.")
             return 0
         credentials = password_manager.get_password(website)
         for credential in credentials:
-            print(f"Website: {website}, Username: {credential['username']}, Password: {credential['password']}")
-    elif args.remove:
+            print(f"Website: {website}, Username: {credential['username']}, Password: {credential['password']}\n")
+    elif args.remove and is_exact_arg('-remove'):
         website = args.remove
         if website not in password_manager.passwords:
             print("No matching website found.")
             return 0
         password_manager.remove_website(website)
         print(f"Password removed for {website}")
-    elif args.remove_user:
+    elif args.remove_user and is_exact_arg('-remove_user'):
         website, username = args.remove_user
         if website not in password_manager.passwords:
             print("No matching website found.")
@@ -154,11 +159,15 @@ def main():
                 print("No matching user found for this website and username.")
                 return 0
         password_manager.remove_website_user(website, username)
-    elif args.list:
+    elif args.list and is_exact_arg('-list'):
         password_manager.list_website_passwords()
+        return 0
+    else:
+        print("Invalid operation or incorrect command usage. Use -add, -get, -remove, -remove_user or -list.")
+        return 0
 
 
 if __name__ == "__main__":
     main()
-    #password_manager = PasswordManager()
-    #print(password_manager.master_password)
+    # password_manager = PasswordManager()
+    # print(password_manager.encrypt_data("1234"))
