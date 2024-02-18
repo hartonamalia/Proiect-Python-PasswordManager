@@ -1,3 +1,3 @@
 # Proiect-Python-PasswordManager
 
-Realizați un utilitar care să managerieze o listă de parole sub forma unui fișier, care poate fiactualizat (insert / update / delete), înăuntrul căruia parolele sunt criptate (cu o parolă master ce va trebui introdusă la deschiderea fișierului).
+I created an application in Python that maintains a list of passwords in the form of a file that can be modified (inserted, updated, or deleted) and contains encrypted passwords (that require a master password to be entered in order to open the file).
